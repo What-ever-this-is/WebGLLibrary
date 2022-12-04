@@ -566,7 +566,7 @@
   let b10, b11, b12;
   let b20, b21, b22;
 
-  if (len < glMatrix.EPSILON) {
+  if (len < 1e-4) {
     return null;
   }
 

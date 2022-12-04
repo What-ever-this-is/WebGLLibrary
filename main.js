@@ -5,13 +5,23 @@
  * EXTERNAL DEPENDENCIES:
  * glmatrix/mat4.js
  * 
- * WebGL Library Build 1.0.100
+ * WebGL Library Build 1.0.102
  */
+
+
+ function print(m){
+    console.log(m)
+}
+
 
 
 class Renderer{
     //The actual rendering code, scene code will follow this.
-
+    /**
+     * 
+     * @param {HTMLCanvasElement} canvas 
+     * @s 
+     */
     constructor(canvas){
         //Initialization function
         this.canvas = canvas;
@@ -27,7 +37,6 @@ class Renderer{
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.enable(this.gl.CULL_FACE);
         this.aspect = canvas.clientWidth/canvas.clientHeight;
-        
     }
 
     clear(r,g,b,a){
@@ -73,9 +82,9 @@ class Renderer{
         return buffer;
     }
 
-    drawScene(programInfo,buffers){
+    drawScene(programInfo,buffers,rotation){
         //Draws the scene
-        this.gl.clear(0.0,0.0,0.0,1.0); // Temporary function, will be replaced later.
+        this.clear(0.0,0.0,0.0,1.0); // Temporary function, will be replaced later.
         this.gl.depthFunc(this.gl.LEQUAL);
         const fov = 45*Math.PI/180; // Tempoary function, will be replaced later.
         const zNear = 0.1;
@@ -84,6 +93,7 @@ class Renderer{
         perspective(projectionMatrix,fov,this.aspect,zNear,zFar);
         const modelViewMatrix = create();
         translate(modelViewMatrix,modelViewMatrix,[-0.0,0.0,-6.0]);
+        rotate(modelViewMatrix,modelViewMatrix,rotation,[0,0,1])
         {
             const numComponents = 2;
             const type=this.gl.FLOAT;
@@ -99,8 +109,27 @@ class Renderer{
                 stride,
                 offset
             )
+            this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
         }
-        this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition)
+        {
+            const numComponents = 4;
+            const type = this.gl.FLOAT;
+            const normalize = false;
+            const stride = 0;
+            const offset = 0;
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER,buffers.color)
+            this.gl.vertexAttribPointer(
+                programInfo.attribLocations.vertexColor,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset
+            )
+            this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
+        }
+        
+        
         this.gl.useProgram(programInfo.program);
         this.gl.uniformMatrix4fv(
             programInfo.uniformLocations.projectionMatrix,
@@ -117,6 +146,75 @@ class Renderer{
             const vertexCount = 4;
             this.gl.drawArrays(this.gl.TRIANGLE_STRIP,offset,vertexCount);
         }
-        //MATH LIBRARY UNDER CONSTRUCTION, WILL NOT BE AVAILABLE.
+        //MATH LIBRARY UNDER CONSTRUCTION, USING glMatrix/mat4.js as substitute
     }
+}
+
+//SCENE
+
+class Scene{
+    /**
+     * Create a new scene
+     * @param {Renderer} renderer 
+     * @returns
+     */
+    constructor(renderer){
+        this.renderer = renderer;
+        this.gl = renderer.gl;
+        this.renderQueue = [];
+    }
+    addObjectToScene(object){
+
+    }
+}
+
+//SCENE OBJECTS
+
+class TriangleStripObject{
+    /**
+     * 
+     * @param {Array} points 
+     */
+    constructor(points){
+        this.points = points;
+        /**
+         * Other data contains:
+         * {
+         * shaders:[...],
+         * program:{...}
+         * }
+         */
+        this.shaders = {
+            fragmentShader:null,
+            vertexShader:null
+        }
+        // Will be implemented later
+        this.usesTexture = false;
+        this.colors = [];
+    }
+    addShader(shader,type){
+        this.shaders[type] = shader;
+    }
+    /**
+     * 
+     * @param {Renderer} renderer 
+     */
+    returnBuffers(renderer){
+        //Create new buffers list
+        const buffers = {
+            position:renderer.createBuffer(renderer.gl.ARRAY_BUFFER,this.points,Float32Array,renderer.gl.STATIC_DRAW),
+            color:render.createBuffer(render.gl.ARRAY_BUFFER,this.colors,Float32Array,renderer.gl.STATIC_DRAW)
+        }
+        return buffers;
+    }
+    applyTransformations(){
+
+    }
+}
+class TraingleObject{
+    
+}
+
+class PointCloudObject{
+
 }
