@@ -82,7 +82,7 @@ class Renderer{
         return buffer;
     }
 
-    drawScene(programInfo,buffers,rotation){
+    drawCall(programInfo,buffers,object){
         //Draws the scene
         this.clear(0.0,0.0,0.0,1.0); // Temporary function, will be replaced later.
         this.gl.depthFunc(this.gl.LEQUAL);
@@ -92,8 +92,7 @@ class Renderer{
         const projectionMatrix = create();
         perspective(projectionMatrix,fov,this.aspect,zNear,zFar);
         const modelViewMatrix = create();
-        translate(modelViewMatrix,modelViewMatrix,[-0.0,0.0,-6.0]);
-        rotate(modelViewMatrix,modelViewMatrix,rotation,[0,0,1])
+        
         {
             const numComponents = 2;
             const type=this.gl.FLOAT;
@@ -161,18 +160,19 @@ class Scene{
     constructor(renderer){
         this.renderer = renderer;
         this.gl = renderer.gl;
-        this.renderQueue = [];
+        this.sceneObjects = [];
     }
     addObjectToScene(object){
-
+        this.sceneObjects.push(object);
     }
+    renderObjects
 }
 
 //SCENE OBJECTS
 
 class TriangleStripObject{
     /**
-     * 
+     * Basically a strip of traingles
      * @param {Array} points 
      */
     constructor(points){
