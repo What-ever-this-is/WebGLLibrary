@@ -1,5 +1,5 @@
 # WebGLLibrary
-A WebGL Library to make webgl easier
+Plz don't use this
 
 please help :(
 
